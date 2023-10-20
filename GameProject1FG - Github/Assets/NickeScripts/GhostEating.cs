@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,20 +11,22 @@ public class GhostEating : MonoBehaviour
     public float huntingModeSpeed = 1.4f;
     public float huntingTime = 5;
     public int ghostsEaten;
+    public int ghostDamage = 5;
     public float ghostHuntingRange = 2;
-    private MovementScript movementScript;
+    private ReworkedMovement movementScript;
     private FlameSpawning flameSpawning;
+    [SerializeField] private GameObject deathScreen;
 
     void Start()
     {
-        movementScript = GetComponent<MovementScript>();
+        movementScript = GetComponent<ReworkedMovement>();
         flameSpawning = GetComponent<FlameSpawning>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && flameSpawning.flameNumber >= flamesRequiredToEat)
+        if (flameSpawning.flameNumber >= flamesRequiredToEat)
         {
             StartCoroutine(HuntingMode());
         }
@@ -47,6 +50,20 @@ public class GhostEating : MonoBehaviour
             }
         }
     }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.transform.tag == "Enemy")
+        {
+            ghostsEaten -= ghostDamage;
+            if (ghostsEaten < 0)
+            {
+                deathScreen.SetActive(true);
+                Destroy(gameObject);
+            }
+        }
+    }
+
     IEnumerator HuntingMode()
     {
         movementScript.speed = movementScript.speed * huntingModeSpeed;

@@ -23,6 +23,12 @@ public class OptionsMenu : MonoBehaviour
 
     void CloseWindow()
     {
+        StartCoroutine(CloseDelay());
+    }
+
+    IEnumerator CloseDelay()
+    {
+        yield return new WaitForSecondsRealtime(0.2f);
         gameObject.SetActive(false);
     }
 }

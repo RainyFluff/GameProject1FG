@@ -1,7 +1,8 @@
 using System.Collections;
 
 using UnityEngine;
-
+using UnityEngine.AI;
+[RequireComponent(typeof(NavMeshAgent))]
 
 public class DetectPlayer : MonoBehaviour
 {
@@ -16,8 +17,7 @@ public class DetectPlayer : MonoBehaviour
     [Range(0,360)]
     [SerializeField] private float angle;
 
-    public GameObject playerRef;
-    public float Radius
+  public float Radius
     {
         get { return radius;  }
         set { radius = value; }
@@ -51,7 +51,8 @@ public class DetectPlayer : MonoBehaviour
     {
         //float stepSpeed = speed * Time.deltaTime;
         //transform.position = Vector3.MoveTowards(transform.position, dummyPlayer.transform.position, stepSpeed);
-        
+        //Pathing();
+        //FOVRoutine();
     }
 
     private IEnumerator FOVRoutine()
@@ -84,11 +85,13 @@ public class DetectPlayer : MonoBehaviour
                 {
                     _canSeePlayer = true;
                     transform.position = Vector3.MoveTowards(transform.position, dummyPlayer.transform.position, stepSpeed);
+
                 }
                 
                 else
                 {
                     _canSeePlayer = false;
+
                 }
                 
             }
@@ -105,4 +108,5 @@ public class DetectPlayer : MonoBehaviour
         }
         
     }
+    
 }

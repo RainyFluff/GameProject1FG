@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -43,8 +44,14 @@ public class PauseMenu : MonoBehaviour
 
     void Continue()
     {
+        StartCoroutine(ContinueGameDelay());
+    }
+
+    IEnumerator ContinueGameDelay()
+    {
+        yield return new WaitForSecondsRealtime(0.2f);
         Time.timeScale = 1.0f;
-        if(_optionsMenu.activeSelf == true)
+        if (_optionsMenu.activeSelf == true)
         {
             _optionsMenu.SetActive(false);
         }
@@ -58,6 +65,12 @@ public class PauseMenu : MonoBehaviour
 
     void Exit()
     {
+        StartCoroutine(ExitDelay());
+    }
+
+    IEnumerator ExitDelay()
+    {
+        yield return new WaitForSecondsRealtime(0.2f);
         Time.timeScale = 1.0f;
         SceneManager.LoadScene(0); // Main menu
     }

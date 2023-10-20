@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -42,11 +43,23 @@ public class MainMenu : MonoBehaviour
 
     void PlayGame()
     {
+        StartCoroutine(DelaySceneCourotine());
+    }
+
+    IEnumerator DelaySceneCourotine()
+    {
+        yield return new WaitForSecondsRealtime(0.2f);
         SceneManager.LoadScene(1); // Load level 1
     }
 
     void QuitGame()
     {
+        StartCoroutine(DelayQuitCourotine());
+    }
+
+    IEnumerator DelayQuitCourotine()
+    {
+        yield return new WaitForSecondsRealtime(0.2f);
         Application.Quit();
     }
 
