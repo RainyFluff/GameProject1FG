@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class MonsterSpawn : MonoBehaviour
 {
+    public bool isBeingUsed;
+    [SerializeField]private GameObject enemy;
     [SerializeField]private List<Transform> _monsterSpawnPos;
     [SerializeField] private GameObject player;
-    [SerializeField] private Transform dummyMonster;
+    //[SerializeField] private Transform dummyMonster;
 
     [SerializeField] private int numberOfMonsters = 6;
     private int randomNumber;
@@ -24,6 +26,7 @@ public class MonsterSpawn : MonoBehaviour
     {
         //RandomSpawnMonster();
         //SpawnMonster(dummy);
+        
     }
     public Transform RandomizedSpawnPosition(List<Transform> listToRandomize)
     {
@@ -44,18 +47,18 @@ public class MonsterSpawn : MonoBehaviour
         }
         Debug.Log(secondMonsterList.Count);
 
-        Transform spawnTransform = RandomizedSpawnPosition(secondMonsterList);
+        //Transform spawnTransform = RandomizedSpawnPosition(secondMonsterList);
         
-        SpawnMonster(spawnTransform);
+        
+        SpawnMonster(secondMonsterList);
 
     }
 
-    public void SpawnMonster(Transform spawnTransform)
+    public void SpawnMonster(List<Transform> spawnList)
     {
         for (int i = 0; i < numberOfMonsters; i++)
-        {
-            Instantiate(Resources.Load("MonsterPlaceHolder"), spawnTransform);
-
+        { 
+            Instantiate(Resources.Load("MonsterPlaceHolder"), spawnList[i]);
         }
     }
 }
