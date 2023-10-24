@@ -43,6 +43,7 @@ public class VictoryEndGame : MonoBehaviour
     IEnumerator ReplayGameDelay()
     {
         yield return new WaitForSecondsRealtime(0.2f);
+        Time.timeScale = 1.0f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name); // Replay current scene
     }
 
@@ -54,6 +55,7 @@ public class VictoryEndGame : MonoBehaviour
     IEnumerator ReturnDelay()
     {
         yield return new WaitForSecondsRealtime(0.2f);
+        Time.timeScale = 1.0f;
         SceneManager.LoadScene(0); // Main menu
     }
 }

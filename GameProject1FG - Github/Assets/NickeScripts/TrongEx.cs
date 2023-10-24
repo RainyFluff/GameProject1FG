@@ -28,6 +28,10 @@ public class TrongEx : MonoBehaviour
             }
         } 
     }
-   
+
+    void testFunction()
+    {
+        
+    }
     
 }

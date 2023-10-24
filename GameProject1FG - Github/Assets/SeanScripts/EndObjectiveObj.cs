@@ -17,6 +17,9 @@ public class EndObjectiveObj : MonoBehaviour
     [Header("End objective settings")]
     [SerializeField] private float _requiredSouls;
 
+    [Header("Victory window")]
+    [SerializeField] private GameObject _victory;
+
     private float distanceToPlayer;
 
     void Start()
@@ -41,14 +44,17 @@ public class EndObjectiveObj : MonoBehaviour
         
          if (distanceToPlayer <= 4f) 
          {
-             if (_player.GetComponent<GhostEating>().ghostsEaten == _requiredSouls)
+             if (_player.GetComponent<GhostEating>().ghostsEaten >= _requiredSouls)
              {
                 _interactText.gameObject.SetActive(true);
                 _interactText.text = "Q"; 
                 _interactText.transform.LookAt(_interactText.transform.position - _camera.transform.position);
                 if (Input.GetKeyUp(KeyCode.Q))
                 {
-                    Destroy(gameObject);
+                    gameObject.GetComponent<MeshRenderer>().enabled = false;
+                    _interactText.GetComponent<MeshRenderer>().enabled = false;
+                    Time.timeScale = 0;
+                    StartCoroutine(EndInVictory());
                 }
              }
             else
@@ -63,6 +69,11 @@ public class EndObjectiveObj : MonoBehaviour
          {
             _interactText.gameObject.SetActive(false);
          }
-        
+    }
+
+    IEnumerator EndInVictory()
+    {
+        yield return new WaitForSecondsRealtime(0.1f);
+        _victory.SetActive(true);
     }
 }

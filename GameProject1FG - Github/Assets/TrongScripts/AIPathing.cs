@@ -9,19 +9,21 @@ using UnityEngine.AI;
 public class AIPathing : MonoBehaviour
 {
     [SerializeField] private GameObject dummyPlayer;
-    [SerializeField] private NavMeshAgent _agent;
+    private NavMeshAgent _agent;
     [SerializeField] private Transform[] points = new Transform[3];
     private int nextPoint = 1;
     
-    [SerializeField] private LayerMask targetMask;
-    [SerializeField] private LayerMask obstructionMask;
+    //[SerializeField] private LayerMask targetMask;
+    //[SerializeField] private LayerMask obstructionMask;
     private bool _canSeePlayer;
-    [SerializeField] private float radius;
-    [Range(0,360)]
-    [SerializeField] private float angle;
+    //[SerializeField] private float radius;
+    //[Range(0,360)]
+    //[SerializeField] private float angle;
 
-    [SerializeField] private float viewRadius = 4.5f;
-    
+    public float speedMultiplier = 2; 
+
+    [SerializeField] private float viewRadius = 8f;
+    public bool isFrozen;
     
     public NavMeshAgent _Agent
     {
@@ -31,7 +33,8 @@ public class AIPathing : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        dummyPlayer = GameObject.Find("Player");
+        _agent = GetComponent<NavMeshAgent>();
     }
 
     // Update is called once per frame
@@ -43,7 +46,27 @@ public class AIPathing : MonoBehaviour
         //DetectingPlayer();
     }
 
-    public void Pathing()
+    public void FixedUpdate()
+    {
+        
+    }
+
+    private void SeeingPlayer()
+    {
+        float distanceBetweenTargets = Vector3.Distance(_agent.transform.position, dummyPlayer.transform.position);
+        //Debug.Log(distanceBetweenTargets);
+        if (distanceBetweenTargets < viewRadius)
+        {
+            //_agent.speed = _agent.speed * speedMultiplier;
+            FollowPlayer();
+        }
+        else
+        {
+                Pathing();
+        }
+    }
+
+    private void Pathing()
     {
         float distanceBetween = Vector3.Distance(_agent.transform.position, points[nextPoint].transform.position);
         if (distanceBetween < 1.5f)
@@ -58,20 +81,11 @@ public class AIPathing : MonoBehaviour
     {
         _agent.SetDestination(dummyPlayer.transform.position);
     }
+    
 
-    private void SeeingPlayer()
+    private void OnCollisionEnter(Collision other)
     {
-        float distanceBetweenTargets = Vector3.Distance(_agent.transform.position, dummyPlayer.transform.position);
-        //Debug.Log(distanceBetweenTargets);
-        if (distanceBetweenTargets < viewRadius)
-        {
-            if (_agent)
-            {
-                
-            }
-            FollowPlayer();
-        }
-        else
+        if (other.transform.CompareTag("Player"))
         {
             Pathing();
         }

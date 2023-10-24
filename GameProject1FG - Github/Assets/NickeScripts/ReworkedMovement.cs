@@ -10,10 +10,10 @@ public class ReworkedMovement : MonoBehaviour
     public float speed = 5;
     [SerializeField] private Transform orientation;
     [SerializeField] private float speedBoostMultiplier = 1.4f;
-    [SerializeField] private float speedBoostCooldown = 10f;
+    public float speedBoostCooldown = 10f;
     [SerializeField] private float speedBoostDuration = 5f;
     private float time;
-    private bool canSpeedBoost;
+    public bool canSpeedBoost;
     private GhostEating ghostEating;
     void Start()
     {
@@ -78,7 +78,6 @@ public class ReworkedMovement : MonoBehaviour
             transform.rotation = Quaternion.Euler(0,315,0);
         }
     }
-    
     void speedBoost()
     {
         if (time <= Time.time)

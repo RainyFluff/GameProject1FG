@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
 
-public class NewBehaviourScript : MonoBehaviour
+public class FlameProximityLight : MonoBehaviour
 {
     [Header("Light")]
     [Range (0.0f, 10.0f)]
