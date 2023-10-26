@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class GhostEating : MonoBehaviour
 {
@@ -22,14 +23,14 @@ public class GhostEating : MonoBehaviour
     [SerializeField] private float lightIntensityMultiplier = 2;
     [SerializeField] private float lightRangeMultiplier = 2;
     [SerializeField] private ParticleSystem huntingParticles;
+    [SerializeField] private MonsterSpawner _monsterSpawner;
 
     private AudioSource _audioSource;
 
     [Header("Audio clips")]
     [SerializeField] private AudioClip _huntedSound;
     [SerializeField] private AudioClip _damageSound;
-    [SerializeField] private AudioClip _soulCollectSound;
-    //[SerializeField] private AudioClip _ghostDeathSound;
+    [SerializeField] private AudioClip[] _ghostScreamSounds;
 
     void Start()
     {
@@ -57,14 +58,19 @@ public class GhostEating : MonoBehaviour
             if (collider.tag == "Enemy")
             {
                 collider.transform.position = Vector3.MoveTowards(collider.transform.position, transform.position, 0.01f);
-                if (Vector3.Distance(collider.transform.position, transform.position) < 1.5f)
+                Debug.Log("EnemyHit");
+
+                if (_monsterSpawner.spawnedMonsterList.Contains(collider.gameObject))
                 {
-                    Destroy(collider.gameObject);
-                    //_audioSource.PlayOneShot(_ghostDeathSound);
-                   // yield return new WaitWhile(() => _audioSource.isPlaying);
-                    _audioSource.PlayOneShot(_soulCollectSound);
-                    ghostsEaten++;
+                    _monsterSpawner.spawnedMonsterList.Remove(collider.gameObject);
                 }
+               
+                Destroy(collider.gameObject);
+                int randomNum = Random.Range(0, _ghostScreamSounds.Length);
+                _audioSource.PlayOneShot(_ghostScreamSounds[randomNum]);
+                ghostsEaten++;
+                _monsterSpawner.spawnedMonsters--;
+
             }
         }
     }
@@ -72,14 +78,19 @@ public class GhostEating : MonoBehaviour
     private void OnCollisionEnter(Collision other)
     {
         aiScript = other.collider.GetComponent<AIPathing>();
-        if (other.transform.tag == "Enemy" && !aiScript.isFrozen)
+        if (other.transform.tag == "Enemy" && !aiScript.isFrozen && !isHunting)
         {
+            Debug.Log("Collided");
             ghostsEaten -= ghostDamage;
             _audioSource.PlayOneShot(_damageSound);
             if (ghostsEaten < 0)
             {
                 deathScreen.SetActive(true);
                 Destroy(gameObject);
+            }
+            else if (ghostsEaten > 0)
+            {
+                Destroy(other.gameObject);
             }
         }
     }
@@ -97,14 +108,15 @@ public class GhostEating : MonoBehaviour
         spotLight.intensity = spotLight.intensity * lightIntensityMultiplier;
         spotLight.range = spotLight.range * lightRangeMultiplier;
         huntingParticles.Play();
-        yield return new WaitForSecondsRealtime(huntingTime);
+        yield return new WaitForSeconds(huntingTime);
+        isHunting = false;
         _audioSource.Stop();
         movementScript.speed = movementScript.speed / huntingModeSpeed;
-        isHunting = false;
         pointLight.intensity = pointLight.intensity / lightIntensityMultiplier;
         pointLight.range = pointLight.range / lightRangeMultiplier;
         spotLight.intensity = spotLight.intensity / lightIntensityMultiplier;
         spotLight.range = spotLight.range / lightRangeMultiplier;
         huntingParticles.Stop();
+        flameSpawning.SpawnFlame();
     }
 }

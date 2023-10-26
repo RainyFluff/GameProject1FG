@@ -76,4 +76,9 @@ public class EndObjectiveObj : MonoBehaviour
         yield return new WaitForSecondsRealtime(0.1f);
         _victory.SetActive(true);
     }
+
+    public float GetRequiredSoulsValue()
+    {
+        return _requiredSouls;
+    }
 }

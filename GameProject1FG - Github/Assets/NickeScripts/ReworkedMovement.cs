@@ -13,13 +13,19 @@ public class ReworkedMovement : MonoBehaviour
     public float speedBoostCooldown = 10f;
     [SerializeField] private float speedBoostDuration = 5f;
     private float time;
-    public bool canSpeedBoost;
+    public bool canSpeedBoost = true;
     private GhostEating ghostEating;
+    private UICounters UIcounters;
+    public float turnSpeed = 600;
+    Quaternion qTo;
+
     void Start()
     {
         ghostEating = GetComponent<GhostEating>();
         rb = GetComponent<Rigidbody>();
         speedBoostCooldown = speedBoostCooldown + speedBoostDuration;
+        UIcounters = GameObject.Find("Canvas").GetComponent<UICounters>();
+        qTo = transform.rotation;
     }
 
     // Update is called once per frame
@@ -34,49 +40,51 @@ public class ReworkedMovement : MonoBehaviour
         if (Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A))
         {
             rb.velocity = orientation.forward * speed;
-            transform.rotation = Quaternion.Euler(0,45,0);
+            qTo = Quaternion.Euler(0,45,0);
         }
         if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
         {
             Vector3 vector = (orientation.forward + -orientation.right).normalized;
-            transform.rotation = Quaternion.Euler(0,0,0);
+            qTo = Quaternion.Euler(0,0,0);
             rb.velocity = vector * speed;
         }
         if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.D)&& !Input.GetKey(KeyCode.A))
         {
             Vector3 vector = (orientation.forward + orientation.right).normalized;
-            transform.rotation = Quaternion.Euler(0,90,0);
+            qTo = Quaternion.Euler(0,90,0);
             rb.velocity = vector * speed;
         }
         //backward
         if (Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A))
         {
             rb.velocity = -orientation.forward * speed;
-            transform.rotation = Quaternion.Euler(0,225,0);
+            qTo = Quaternion.Euler(0,225,0);
         }
         if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
         {
             Vector3 vector = (-orientation.forward + -orientation.right).normalized;
             rb.velocity = vector * speed;
-            transform.rotation = Quaternion.Euler(0,270,0);
+            qTo = Quaternion.Euler(0,270,0);
         }
         if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.D)&& !Input.GetKey(KeyCode.A))
         {
             Vector3 vector = (-orientation.forward + orientation.right).normalized;
-            transform.rotation = Quaternion.Euler(0,180,0);
+            qTo = Quaternion.Euler(0,180,0);
             rb.velocity = vector * speed;
         }
         //Horizontal
         if (Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W))
         {
             rb.velocity = orientation.right * speed;
-            transform.rotation = Quaternion.Euler(0,135,0);
+            qTo = Quaternion.Euler(0,135,0);
         }
         if (Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W))
         {
             rb.velocity = -orientation.right * speed;
-            transform.rotation = Quaternion.Euler(0,315,0);
+            qTo = Quaternion.Euler(0,315,0);
         }
+
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, qTo, turnSpeed * Time.deltaTime);
     }
     void speedBoost()
     {
@@ -89,9 +97,9 @@ public class ReworkedMovement : MonoBehaviour
         {
             ghostEating.ghostsEaten--;
             StartCoroutine(SpeedBoost());
+            StartCoroutine(UIcounters.SprintCountDownCoroutine());
         }
     }
-
     IEnumerator SpeedBoost()
     {
         speed = speed * speedBoostMultiplier;

@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -56,6 +57,7 @@ public class PauseMenu : MonoBehaviour
             _optionsMenu.SetActive(false);
         }
         gameObject.SetActive(false);
+        AudioListener.pause = false;
     }
 
     void Options()

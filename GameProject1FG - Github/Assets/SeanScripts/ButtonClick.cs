@@ -11,7 +11,7 @@ public class ButtonClick : MonoBehaviour
     void Start()
     {
         _audioSource = GetComponent<AudioSource>();
-
+        _audioSource.ignoreListenerPause = true;
         if (_audioSource == null)
         {
             Debug.LogError("Audio Source is NULL");

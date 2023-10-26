@@ -5,8 +5,23 @@ using UnityEngine;
 
 public class FlameScript : MonoBehaviour
 {
-    private void OnTriggerEnter(Collider other)
+    private bool _hasBeenCollected = false;
+
+    private void Update()
     {
-        Destroy(gameObject);
+        if (_hasBeenCollected)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    public bool GetHasBeenCollected()
+    {
+        return _hasBeenCollected;
+    }
+
+    public void SetHasBeenCollected(bool collected)
+    {
+        _hasBeenCollected = collected;
     }
 }

@@ -18,6 +18,8 @@ public class EnemyProximityLight : MonoBehaviour
 
     public float distanceToEnemy;
 
+    public List<Transform> currentEnemyList = new List<Transform>();
+
     public Transform enemy;
     public Light flickerLight;
 

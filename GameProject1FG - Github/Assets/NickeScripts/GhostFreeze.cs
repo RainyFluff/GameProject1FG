@@ -10,14 +10,17 @@ public class GhostFreeze : MonoBehaviour
     public float freezeCooldown = 60;
     [SerializeField] private float freezeDuration = 10;
     private GhostEating ghostEating;
-    public bool canFreezeGhost;
+    public bool canFreezeGhost = true;
     private float time;
     private AIPathing aiScript;
+    private GameObject freezeRadiusIndication;
+    private UICounters UIcounters;
     
     // Start is called before the first frame update
     void Start()
     {
         ghostEating = GetComponent<GhostEating>();
+        UIcounters = GameObject.Find("Canvas").GetComponent<UICounters>();
     }
 
     // Update is called once per frame
@@ -28,13 +31,16 @@ public class GhostFreeze : MonoBehaviour
             canFreezeGhost = true;
             if (Input.GetKeyDown(KeyCode.Space) && ghostEating.ghostsEaten >= 2 && canFreezeGhost)
             {
+                StartCoroutine(FreezeCooldown());
                 ghostEating.ghostsEaten -= freezeCost;
                 time = Time.time + freezeCooldown;
+                freezeRadiusIndication = (GameObject)Instantiate(Resources.Load("FreezeRadius"),transform.position, Quaternion.Euler(0,0,0));
+                freezeRadiusIndication.transform.localScale = new Vector3(freezeRange, 0.2f, freezeRange);
+                StartCoroutine(DestroyFreezeIndicator());
                 foreach (Collider enemy in Physics.OverlapSphere(transform.position, freezeRange))
                 {
                     if (enemy.transform.tag == "Enemy")
                     {
-                        //enemy cant damage us (slight change in "GhostEating" script required)
                         StartCoroutine(GhostFrozen(enemy));
                     }
                 }
@@ -46,6 +52,11 @@ public class GhostFreeze : MonoBehaviour
         }
     }
 
+    IEnumerator FreezeCooldown()
+    {
+        yield return StartCoroutine(UIcounters.FreezeCountdownCoroutine());
+    }
+
     IEnumerator GhostFrozen(Collider enemy)
     {
         enemy.GetComponent<NavMeshAgent>().speed = 0;
@@ -54,5 +65,11 @@ public class GhostFreeze : MonoBehaviour
         yield return new WaitForSeconds(freezeDuration);
         enemy.GetComponent<NavMeshAgent>().speed = 3.5f; // Original value
         aiScript.isFrozen = false;
+    }
+
+    IEnumerator DestroyFreezeIndicator()
+    {
+        yield return new WaitForSeconds(0.2f);
+        Destroy(freezeRadiusIndication);
     }
 }

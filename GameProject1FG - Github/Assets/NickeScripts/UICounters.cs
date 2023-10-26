@@ -12,47 +12,57 @@ public class UICounters : MonoBehaviour
     private GhostEating ghostEating;
     private GhostFreeze ghostFreeze;
     private ReworkedMovement movementScript;
-    private FlameSpawning flameSpawning;
+    private EndObjectiveObj endObjectiveObjScript;
     public GameObject player;
-    private int freezeCooldwn;
-    private int sprintCooldwn;
 
     private void Start()
     {
         movementScript = player.GetComponent<ReworkedMovement>();
         ghostEating = player.GetComponent<GhostEating>();
         ghostFreeze = player.GetComponent<GhostFreeze>();
-        flameSpawning = player.GetComponent<FlameSpawning>();
+
+        // Gravestone object
+        endObjectiveObjScript = GameObject.Find("mainpiece").GetComponent<EndObjectiveObj>();
+
+        sprintCooldown.text = "Sprint Ready";
+        freezeCooldown.text = "Freeze Ready";
     }
 
     void Update()
     {
-        soulCounter.text = ghostEating.ghostsEaten.ToString();
-        SprintCounter();
-        FreezeCounter();
-    }
-
-    void SprintCounter()
-    {
-        if (movementScript.canSpeedBoost)
+        if (ghostEating.ghostsEaten >= 0)
         {
-            sprintCooldown.text = "Sprint Ready";
+            soulCounter.text = ghostEating.ghostsEaten.ToString() + " / " + endObjectiveObjScript.GetRequiredSoulsValue().ToString();
         }
         else
         {
-            sprintCooldown.text = "Sprint Cooldown";
+            soulCounter.text = "0 / " + endObjectiveObjScript.GetRequiredSoulsValue().ToString();
         }
     }
 
-    void FreezeCounter()
+    public IEnumerator SprintCountDownCoroutine()
     {
-        if (ghostFreeze.canFreezeGhost)
+        float sprintCooldownTime = movementScript.speedBoostCooldown;
+
+        for (float i = sprintCooldownTime; i >= 0; i--)
         {
-            freezeCooldown.text = "Freeze Ready";
+            sprintCooldown.text = "Sprint ready in: " + i;
+            yield return new WaitForSeconds(1);
         }
-        else
+
+        sprintCooldown.text = "Sprint Ready";
+    }
+
+    public IEnumerator FreezeCountdownCoroutine()
+    {
+        float freezeCooldownTime = ghostFreeze.freezeCooldown;
+
+        for (float i = freezeCooldownTime; i >= 0; i--)
         {
-            freezeCooldown.text = "Freeze Cooldown";
+            freezeCooldown.text = "Freeze ready in: " + i;
+            yield return new WaitForSeconds(1);
         }
+
+        freezeCooldown.text = "Freeze Ready";
     }
 }

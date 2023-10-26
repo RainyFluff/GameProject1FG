@@ -6,20 +6,11 @@ using Random = UnityEngine.Random;
 
 public class MonsterSpawn : MonoBehaviour
 {
-    public bool isBeingUsed;
-    [SerializeField]private GameObject enemy;
-    [SerializeField]private List<Transform> _monsterSpawnPos;
-<<<<<<< Updated upstream
-    [SerializeField] private GameObject player;
-    //[SerializeField] private Transform dummyMonster;
-
-    [SerializeField] private int numberOfMonsters = 6;
-=======
+    public List<Transform> _monsterSpawnPos;
     //[SerializeField] private GameObject player;
     [SerializeField] private Transform dummyMonster;
     [SerializeField] public bool monsterExist = true;
     //[SerializeField] private int numberOfMonsters = 30;
->>>>>>> Stashed changes
     private int randomNumber;
     //private AIPathing AIPathing;
     
@@ -36,15 +27,12 @@ public class MonsterSpawn : MonoBehaviour
     {
         //RandomSpawnMonster();
         //SpawnMonster(dummy);
-<<<<<<< Updated upstream
-=======
         //monsterExist = false;
         if (!monsterExist)
         {
             RandomSpawnMonster();
         }
         
->>>>>>> Stashed changes
         
     }
     public Transform RandomizedSpawnPosition(List<Transform> listToRandomize)
@@ -67,22 +55,10 @@ public class MonsterSpawn : MonoBehaviour
         //Debug.Log(secondMonsterList.Count);
 
         //Transform spawnTransform = RandomizedSpawnPosition(secondMonsterList);
-<<<<<<< Updated upstream
-        
-        
-=======
->>>>>>> Stashed changes
         SpawnMonster(secondMonsterList);
 
     }
 
-<<<<<<< Updated upstream
-    public void SpawnMonster(List<Transform> spawnList)
-    {
-        for (int i = 0; i < numberOfMonsters; i++)
-        { 
-            Instantiate(Resources.Load("MonsterPlaceHolder"), spawnList[i]);
-=======
     public void SpawnMonster(List<Transform> spawnTransform)
     {
         
@@ -93,7 +69,6 @@ public class MonsterSpawn : MonoBehaviour
         { 
             Instantiate(Resources.Load("MonsterPlaceHolder"), randomSpawn);
             monsterExist = true;
->>>>>>> Stashed changes
         }
         
     }

@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class TrongEx : MonoBehaviour
 {
+    public Transform flame;
     public bool isBeingUsed;
     private GameObject enemy;
 
@@ -27,11 +28,6 @@ public class TrongEx : MonoBehaviour
                 enemy = enemies.transform.gameObject;
             }
         } 
-    }
-
-    void testFunction()
-    {
-        
     }
     
 }

@@ -5725,6 +5725,7 @@ MonoBehaviour:
   defaultSpawn: {fileID: 696345261}
   flameNumber: 0
   flamePickUpParticles: {fileID: 1961800688}
+  _audioSource: {fileID: 0}
   _flameCollectSound: {fileID: 8300000, guid: 11350a1af20e4714caed636e73eecff3, type: 3}
 --- !u!65 &612060639
 BoxCollider:
@@ -9708,10 +9709,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3

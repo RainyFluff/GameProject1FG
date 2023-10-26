@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -10,38 +11,29 @@ public class AIPathing : MonoBehaviour
 {
     [SerializeField] private GameObject dummyPlayer;
     private NavMeshAgent _agent;
-    [SerializeField] private Transform[] points = new Transform[3];
+    [Header("ALL AI CAN ONLY USE 3 POINTS")]
+    public List<Transform> points;
     private int nextPoint = 1;
-    
-    //[SerializeField] private LayerMask targetMask;
-    //[SerializeField] private LayerMask obstructionMask;
-    private bool _canSeePlayer;
-    //[SerializeField] private float radius;
-    //[Range(0,360)]
-    //[SerializeField] private float angle;
 
-    public float speedMultiplier = 2; 
-
-    [SerializeField] private float viewRadius = 8f;
+    [SerializeField] private float viewRadius = 1.5f;
     public bool isFrozen;
-    
-    public NavMeshAgent _Agent
-    {
-        get { return _agent; }
-        set { _agent = value; }
-    }
+    private GhostEating _ghostEating;
+
+    private DecoyAbility decoyScript;
     // Start is called before the first frame update
     void Start()
     {
+        _ghostEating = GameObject.Find("Player").GetComponent<GhostEating>();
         dummyPlayer = GameObject.Find("Player");
+        decoyScript = GameObject.Find("Player").GetComponent<DecoyAbility>();
         _agent = GetComponent<NavMeshAgent>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
         SeeingPlayer();
+        SeeingDecoy();
         //Pathing();
         //DetectingPlayer();
     }
@@ -60,12 +52,28 @@ public class AIPathing : MonoBehaviour
             //_agent.speed = _agent.speed * speedMultiplier;
             FollowPlayer();
         }
+        else if (distanceBetweenTargets < 6.5f && _ghostEating.isHunting)
+        {
+            Vector3 directToPlayer = _agent.transform.position - dummyPlayer.transform.position ;
+            Vector3 newPos = _agent.transform.position + directToPlayer;
+            _agent.SetDestination(newPos);
+        }
         else
         {
                 Pathing();
         }
     }
 
+    void SeeingDecoy()
+    {
+        float distanceBetweenTargets = Vector3.Distance(_agent.transform.position, decoyScript.decoy.transform.position);
+        if (distanceBetweenTargets < viewRadius)
+        {
+            //_agent.speed = _agent.speed * speedMultiplier;
+            FollowPlayer();
+        }
+        
+    }
     private void Pathing()
     {
         float distanceBetween = Vector3.Distance(_agent.transform.position, points[nextPoint].transform.position);
@@ -73,7 +81,6 @@ public class AIPathing : MonoBehaviour
         {
             nextPoint = nextPoint != 2 ? nextPoint + 1 : 0;
         }
-
         _agent.destination = points[nextPoint].position;
     }
 

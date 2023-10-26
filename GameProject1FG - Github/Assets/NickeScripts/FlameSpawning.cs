@@ -12,16 +12,20 @@ public class FlameSpawning : MonoBehaviour
     public int flameNumber;
     private int previousSpawn;
     [SerializeField] ParticleSystem flamePickUpParticles;
-    private AudioSource _audioSource;
+    public AudioSource _audioSource;
 
     [Header("Audio clips")]
     [SerializeField] private AudioClip _flameCollectSound;
 
+    private FlameProximityLight _flameProximityLight;
+
     void Start()
     {
-        Instantiate(Resources.Load("FlamePlaceholder"), defaultSpawn);
+        //Instantiate(Resources.Load("FlamePlaceholder"), defaultSpawn);
         flameNumber = 0;
-        _audioSource = GetComponent<AudioSource>();
+        //_audioSource = GetComponent<AudioSource>();
+        _flameProximityLight = GetComponent<FlameProximityLight>();
+        SpawnFlame();
     }
     //public Transform RandomizedSpawnPosition(List<Transform> listToRandomize)
     //{
@@ -38,15 +42,20 @@ public class FlameSpawning : MonoBehaviour
             //Debug.Log("Collision");
             previousSpawn = randomNumber;
             flamePickUpParticles.Play();
-            Destroy(other.gameObject);
+            foreach (Transform t in spawnPositions)
+            {
+                foreach (Transform child in t.transform)
+                {
+                    GameObject.Destroy(child.gameObject);
+                }
+            }
             _audioSource.clip = _flameCollectSound;
             _audioSource.Play();
-            flameNumber++;            
-            SpawnFlame();
+            flameNumber++;
         }
     }
 
-    void SpawnFlame()
+    public void SpawnFlame()
     {
         spawnTimerCooldown();
         List<Transform> transformTlist = new List<Transform>();
@@ -77,6 +86,7 @@ public class FlameSpawning : MonoBehaviour
                 Instantiate(Resources.Load("FlamePlaceholder"), spawnPositions[newSpawnNum]);
             }
         }
+        _flameProximityLight.AddToFlameList();
     }
 
     IEnumerator spawnTimerCooldown()
