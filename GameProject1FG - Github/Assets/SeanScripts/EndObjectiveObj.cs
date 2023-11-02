@@ -20,10 +20,13 @@ public class EndObjectiveObj : MonoBehaviour
     [Header("Victory window")]
     [SerializeField] private GameObject _victory;
 
+    private Animator animator;
+
     private float distanceToPlayer;
 
     void Start()
     {
+        animator = GetComponent<Animator>();
         if (_player == null)
         {
             Debug.LogError("Player is NULL");
@@ -47,13 +50,15 @@ public class EndObjectiveObj : MonoBehaviour
              if (_player.GetComponent<GhostEating>().ghostsEaten >= _requiredSouls)
              {
                 _interactText.gameObject.SetActive(true);
-                _interactText.text = "Q"; 
-                _interactText.transform.LookAt(_interactText.transform.position - _camera.transform.position);
+                _interactText.text = "Q";
+                _interactText.transform.rotation = Quaternion.LookRotation((_interactText.transform.position - Camera.main.transform.position).normalized);
                 if (Input.GetKeyUp(KeyCode.Q))
                 {
-                    gameObject.GetComponent<MeshRenderer>().enabled = false;
+                    //gameObject.GetComponent<MeshRenderer>().enabled = false;
                     _interactText.GetComponent<MeshRenderer>().enabled = false;
-                    Time.timeScale = 0;
+                    Time.timeScale = 1;
+                    Animator playerAnimator = _player.GetComponent<Animator>();
+                    playerAnimator.SetBool("GameFinished", true);
                     StartCoroutine(EndInVictory());
                 }
              }
@@ -61,7 +66,7 @@ public class EndObjectiveObj : MonoBehaviour
             {
                 _interactText.gameObject.SetActive(true);
                 _interactText.text = "Not enough souls";
-                _interactText.transform.LookAt(_interactText.transform.position - _camera.transform.position);
+                _interactText.transform.rotation = Quaternion.LookRotation((_interactText.transform.position - Camera.main.transform.position).normalized);
 
             }
         }
@@ -73,8 +78,12 @@ public class EndObjectiveObj : MonoBehaviour
 
     IEnumerator EndInVictory()
     {
-        yield return new WaitForSecondsRealtime(0.1f);
+        animator.SetBool("HasEnded", true);
         _victory.SetActive(true);
+        yield return new WaitForSeconds(1);
+        Animator playerAnimator = _player.GetComponent<Animator>();
+        playerAnimator.SetBool("GameFinished", false);
+        yield return new WaitForSecondsRealtime(4f);
     }
 
     public float GetRequiredSoulsValue()

@@ -21,7 +21,7 @@ public class FlameSpawning : MonoBehaviour
 
     void Start()
     {
-        //Instantiate(Resources.Load("FlamePlaceholder"), defaultSpawn);
+        Instantiate(Resources.Load("FlamePlaceholder"), defaultSpawn);
         flameNumber = 0;
         //_audioSource = GetComponent<AudioSource>();
         _flameProximityLight = GetComponent<FlameProximityLight>();

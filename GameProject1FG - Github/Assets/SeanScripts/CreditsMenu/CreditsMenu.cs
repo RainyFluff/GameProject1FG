@@ -27,7 +27,9 @@ public class CreditsMenu : MonoBehaviour
 
     IEnumerator CloseDelay()
     {
-        yield return new WaitForSecondsRealtime(0.2f);
+        ButtonClick click = _back_btn.GetComponent<ButtonClick>();
+        float _sound = click._clickSound.length;
+        yield return new WaitForSecondsRealtime(_sound - 0.1f);
         gameObject.SetActive(false);
     }
 }

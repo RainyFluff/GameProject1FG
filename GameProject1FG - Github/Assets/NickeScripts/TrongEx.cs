@@ -1,33 +1,20 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class TrongEx : MonoBehaviour
 {
-    public Transform flame;
-    public bool isBeingUsed;
-    private GameObject enemy;
+    [SerializeField] private List<float> nearbyNumbers;
+    private Transform enemies;
 
     private void Update()
     {
-        if (!enemy.active)
-        {
-            isBeingUsed = false;
-        }
-        Debug.Log(isBeingUsed);
+        var sorted = nearbyNumbers.OrderBy(enemy => (transform.position - enemies.transform.position));
+        var nearestEnemy = sorted.FirstOrDefault();
+        nearbyNumbers.Sort();
     }
 
-    public void onSpawn()
-    {
-        foreach (Collider enemies in Physics.OverlapSphere(transform.position, 2))
-        {
-            if (enemies.transform.tag == "Enemy")
-            {
-                isBeingUsed = true;
-                enemy = enemies.transform.gameObject;
-            }
-        } 
-    }
     
 }

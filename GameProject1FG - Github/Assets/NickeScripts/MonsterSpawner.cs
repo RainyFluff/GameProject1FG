@@ -11,10 +11,11 @@ public class MonsterSpawner : MonoBehaviour
     public int spawnedMonsters;
 
     [SerializeField] private int maxSpawnedMonsters = 5;
-    // Start is called before the first frame update
+
+
     void Start()
     {
-        
+
     }
     public Transform RandomizedSpawnPosition(List<Transform> listToRandomize)
     {
@@ -34,8 +35,8 @@ public class MonsterSpawner : MonoBehaviour
 
     void EnemySpawn()
     {
-       GameObject enemyInstance = Instantiate((GameObject)Resources.Load("MonsterPlaceHolder"), RandomizedSpawnPosition(monsterSpawnPosList));
-       spawnedMonsterList.Add(enemyInstance);
-       spawnedMonsters++;
+        GameObject enemyInstance = Instantiate((GameObject)Resources.Load("EnemyPlaceholder"), RandomizedSpawnPosition(monsterSpawnPosList));
+        spawnedMonsterList.Add(enemyInstance);
+        spawnedMonsters++;
     }
 }

@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Experimental.GlobalIllumination;
+using UnityEngine.UIElements;
 
 public class EnemyProximityLight : MonoBehaviour
 {
@@ -17,34 +17,82 @@ public class EnemyProximityLight : MonoBehaviour
     [SerializeField] private float midPoint = 6.0f;
 
     public float distanceToEnemy;
-
-    public List<Transform> currentEnemyList = new List<Transform>();
-
-    public Transform enemy;
     public Light flickerLight;
-
-    public bool isFlickering;
-    //public float timeDelay = 0.4f;
+    public bool isFar;
+    public bool isClose;
     private float startTime;
     public float coolDown1 = 0.3f;
     public float coolDown2 = 0.25f;
+    [SerializeField] private MonsterSpawner monsterSpawner;
+
+    [SerializeField] private GameObject heartBeatsManager;
+
+    public GameObject[] allEnemy;
+    float distance;
+    float nearestDistance = 10000;
+    GameObject nearestEnemy;
+
+    void FindEnemys()
+    {
+        nearestDistance = float.MaxValue;
+        allEnemy = GameObject.FindGameObjectsWithTag("Enemy");
+
+        for (int i = 0; i < allEnemy.Length; i++)
+        {
+            distance = Vector3.Distance(transform.position, allEnemy[i].transform.position);
+
+            if (distance <= nearestDistance)
+            {
+                nearestEnemy = allEnemy[i];
+                nearestDistance = distance;
+            }
+        }
+    }
 
     void Update()
     {
-        distanceToEnemy = Vector3.Distance(transform.position, enemy.position); 
+        FindEnemys();
+
+
+        distanceToEnemy = Vector3.Distance(transform.position, nearestEnemy.transform.position);
         if (startTime <= Time.time)
         {
             if (distanceToEnemy < maxEnemyRange && distanceToEnemy > midPoint)
             {
+                isFar = true;
+                isClose = false;
                 StartCoroutine(FlickeringLightFar());
-                isFlickering = true;
             }
 
             else if (distanceToEnemy < minEnemyRange && distanceToEnemy <= midPoint)
             {
+                isClose = true;
+                isFar = false;
                 StartCoroutine(FlickeringLightClose());
-                isFlickering = true;
             }
+
+            else if (distanceToEnemy > maxEnemyRange)
+            {
+                isClose = false;
+                isFar = false;
+                Debug.Log("bruh kek");
+            }
+        }
+
+        if (isFar && !isClose)
+        {
+            heartBeatsManager.GetComponent<HeartBeats>().IsFar();
+            heartBeatsManager.GetComponent<HeartBeats>().IsNotClose();
+        }
+        else if (isClose && !isFar)
+        {
+            heartBeatsManager.GetComponent<HeartBeats>().IsClose();
+            heartBeatsManager.GetComponent<HeartBeats>().IsNotFar();
+        }
+        else
+        {
+            heartBeatsManager.GetComponent<HeartBeats>().IsNotFar();
+            heartBeatsManager.GetComponent<HeartBeats>().IsNotClose();
         }
     }
 
@@ -55,7 +103,6 @@ public class EnemyProximityLight : MonoBehaviour
         yield return new WaitForSeconds(maxTimeDelay);
         flickerLight.enabled = true;
         yield return new WaitForSeconds(maxTimeDelay);
-        isFlickering = false;    
     }
 
     IEnumerator FlickeringLightClose()
@@ -65,6 +112,11 @@ public class EnemyProximityLight : MonoBehaviour
         yield return new WaitForSeconds(minTimeDelay);
         flickerLight.enabled = true;
         yield return new WaitForSeconds(minTimeDelay);
-        isFlickering = false;
+ 
+    }
+
+    public void StopHeartBeatSound()
+    {
+        heartBeatsManager.GetComponent<AudioSource>().Stop();
     }
 }

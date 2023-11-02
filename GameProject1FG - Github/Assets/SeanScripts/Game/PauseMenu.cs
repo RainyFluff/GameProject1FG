@@ -14,11 +14,15 @@ public class PauseMenu : MonoBehaviour
     [Header("Menus")]
     [SerializeField] private GameObject _optionsMenu;
 
+    Button continueBtn;
+    Button options;
+    Button exit;
+
     void Start()
     {
-        Button continueBtn = _continue_btn.GetComponent<Button>();
-        Button options = _options_btn.GetComponent<Button>();
-        Button exit = _exit_btn.GetComponent<Button>();
+        continueBtn = _continue_btn.GetComponent<Button>();
+        options = _options_btn.GetComponent<Button>();
+        exit = _exit_btn.GetComponent<Button>();
 
         if (continueBtn == null )
         {
@@ -50,7 +54,8 @@ public class PauseMenu : MonoBehaviour
 
     IEnumerator ContinueGameDelay()
     {
-        yield return new WaitForSecondsRealtime(0.2f);
+        ButtonClick click = continueBtn.GetComponent<ButtonClick>();
+        yield return new WaitForSecondsRealtime(click._clickSound.length - 0.1f);
         Time.timeScale = 1.0f;
         if (_optionsMenu.activeSelf == true)
         {
@@ -72,8 +77,10 @@ public class PauseMenu : MonoBehaviour
 
     IEnumerator ExitDelay()
     {
-        yield return new WaitForSecondsRealtime(0.2f);
+        ButtonClick click = exit.GetComponent<ButtonClick>();
+        yield return new WaitForSecondsRealtime(click._clickSound.length);
         Time.timeScale = 1.0f;
+        AudioListener.pause = false;
         SceneManager.LoadScene(0); // Main menu
     }
 }

@@ -12,8 +12,12 @@ public class LevelUI : MonoBehaviour
     [Header("Brightness overlay")]
     [SerializeField] private Image _darkOverlay;
 
-    [Header("SO")]
+    [Header("Scriptable Object (SO)")]
     [SerializeField] private GameSettings _gameSettings;
+
+    [Header("Endgame windows")]
+    [SerializeField] private GameObject _deathWindow;
+    [SerializeField] private GameObject _victoryWindow;
 
     void Start()
     {
@@ -33,11 +37,14 @@ public class LevelUI : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (_deathWindow.activeSelf == false && _victoryWindow.activeSelf == false)
         {
-            Time.timeScale = 0f;
-            _pauseMenu.SetActive(true);
-            AudioListener.pause = true;
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                Time.timeScale = 0f;
+                _pauseMenu.SetActive(true);
+                AudioListener.pause = true;
+            }
         }
         DarkOverlay();
     }

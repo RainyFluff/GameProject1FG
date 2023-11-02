@@ -8,6 +8,7 @@ public class GhostEating : MonoBehaviour
 {
     private RaycastHit hit;
     public bool isHunting;
+    public bool isAlive;
     public int flamesRequiredToEat = 5;
     public float huntingModeSpeed = 1.4f;
     public float huntingTime = 5;
@@ -17,6 +18,8 @@ public class GhostEating : MonoBehaviour
     public float ghostHuntingRange = 2;
     private ReworkedMovement movementScript;
     private FlameSpawning flameSpawning;
+    private Animator animator;
+    private Rigidbody rb;
     [SerializeField] private GameObject deathScreen;
     [SerializeField] private Light pointLight;
     [SerializeField] private Light spotLight;
@@ -24,19 +27,29 @@ public class GhostEating : MonoBehaviour
     [SerializeField] private float lightRangeMultiplier = 2;
     [SerializeField] private ParticleSystem huntingParticles;
     [SerializeField] private MonsterSpawner _monsterSpawner;
+    private Animator enemyAnimator;
+    private GameObject gmRef;
 
     private AudioSource _audioSource;
 
     [Header("Audio clips")]
     [SerializeField] private AudioClip _huntedSound;
-    [SerializeField] private AudioClip _damageSound;
+    [SerializeField] private AudioClip[] _playerDamageSounds;
+    [SerializeField] private AudioClip _afterChaseSound;
     [SerializeField] private AudioClip[] _ghostScreamSounds;
+
+    [Header("Audio settings")]
+    [SerializeField] private float _huntingSoundVolume = 0.5f;
 
     void Start()
     {
+        rb = GetComponent<Rigidbody>();
+        animator = GetComponent<Animator>();
         movementScript = GetComponent<ReworkedMovement>();
         flameSpawning = GetComponent<FlameSpawning>();
         _audioSource = GetComponent<AudioSource>();
+
+        isAlive = true;
     }
 
     // Update is called once per frame
@@ -50,6 +63,15 @@ public class GhostEating : MonoBehaviour
         {
             ghosteating();
         }
+        if (isHunting && rb.velocity.magnitude > 0)
+        {
+            animator.SetBool("IsHunting", true);
+        }
+        else if (!isHunting)
+        {
+            animator.SetBool("IsHunting", false);
+        }
+        
     }
     void ghosteating()
     {
@@ -58,19 +80,17 @@ public class GhostEating : MonoBehaviour
             if (collider.tag == "Enemy")
             {
                 collider.transform.position = Vector3.MoveTowards(collider.transform.position, transform.position, 0.01f);
-                Debug.Log("EnemyHit");
-
+                enemyAnimator = collider.gameObject.GetComponent<Animator>();
                 if (_monsterSpawner.spawnedMonsterList.Contains(collider.gameObject))
                 {
                     _monsterSpawner.spawnedMonsterList.Remove(collider.gameObject);
                 }
-               
-                Destroy(collider.gameObject);
                 int randomNum = Random.Range(0, _ghostScreamSounds.Length);
                 _audioSource.PlayOneShot(_ghostScreamSounds[randomNum]);
                 ghostsEaten++;
                 _monsterSpawner.spawnedMonsters--;
-
+                StartCoroutine(GhostDeath());
+                Destroy(collider.gameObject);
             }
         }
     }
@@ -80,16 +100,18 @@ public class GhostEating : MonoBehaviour
         aiScript = other.collider.GetComponent<AIPathing>();
         if (other.transform.tag == "Enemy" && !aiScript.isFrozen && !isHunting)
         {
-            Debug.Log("Collided");
             ghostsEaten -= ghostDamage;
-            _audioSource.PlayOneShot(_damageSound);
             if (ghostsEaten < 0)
             {
+                isAlive = false;
+                animator.SetBool("IsDead", true);
                 deathScreen.SetActive(true);
-                Destroy(gameObject);
+                Destroy(other.gameObject);
             }
-            else if (ghostsEaten > 0)
+            else if (ghostsEaten >= 0)
             {
+                int randomNum = Random.Range(0, _playerDamageSounds.Length);
+                _audioSource.PlayOneShot(_playerDamageSounds[randomNum]);
                 Destroy(other.gameObject);
             }
         }
@@ -98,25 +120,39 @@ public class GhostEating : MonoBehaviour
     IEnumerator HuntingMode()
     {
         _audioSource.clip = _huntedSound;
+        _audioSource.volume = _huntingSoundVolume;
         _audioSource.loop = true;
         _audioSource.Play();
         movementScript.speed = movementScript.speed * huntingModeSpeed;
+        movementScript.StopMovementSound();
+        movementScript._isRunning = true;
         isHunting = true;
         flameSpawning.flameNumber -= flamesRequiredToEat;
-        pointLight.intensity = pointLight.intensity * lightIntensityMultiplier;
-        pointLight.range = pointLight.range * lightRangeMultiplier;
-        spotLight.intensity = spotLight.intensity * lightIntensityMultiplier;
-        spotLight.range = spotLight.range * lightRangeMultiplier;
+        //pointLight.intensity = pointLight.intensity * lightIntensityMultiplier;
+        //pointLight.range = pointLight.range * lightRangeMultiplier;
+       // spotLight.intensity = spotLight.intensity * lightIntensityMultiplier;
+       // spotLight.range = spotLight.range * lightRangeMultiplier;
         huntingParticles.Play();
         yield return new WaitForSeconds(huntingTime);
         isHunting = false;
         _audioSource.Stop();
+        _audioSource.volume = 1f;
         movementScript.speed = movementScript.speed / huntingModeSpeed;
-        pointLight.intensity = pointLight.intensity / lightIntensityMultiplier;
-        pointLight.range = pointLight.range / lightRangeMultiplier;
-        spotLight.intensity = spotLight.intensity / lightIntensityMultiplier;
-        spotLight.range = spotLight.range / lightRangeMultiplier;
+        movementScript._isRunning = false;
+        movementScript.StopMovementSound();
+       // pointLight.intensity = pointLight.intensity / lightIntensityMultiplier;
+       // pointLight.range = pointLight.range / lightRangeMultiplier;
+       // spotLight.intensity = spotLight.intensity / lightIntensityMultiplier;
+      //  spotLight.range = spotLight.range / lightRangeMultiplier;
         huntingParticles.Stop();
         flameSpawning.SpawnFlame();
+        _audioSource.PlayOneShot(_afterChaseSound);
+    }
+
+    IEnumerator GhostDeath()
+    {
+        Debug.Log("cour started");
+        enemyAnimator.SetBool("HasDied",true);
+        yield return new WaitForSeconds(1);
     }
 }

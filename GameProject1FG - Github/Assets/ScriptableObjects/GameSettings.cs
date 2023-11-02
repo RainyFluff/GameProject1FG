@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu]
 public class GameSettings : ScriptableObject
 {
-    private float soundVolume = 1f;
+    private float soundVolume = 0.5f;
     private float brightness = 0f;
 
     public float SoundVolume

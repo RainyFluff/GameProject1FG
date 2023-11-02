@@ -3,66 +3,115 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class UICounters : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI soulCounter;
-    [SerializeField] private TextMeshProUGUI sprintCooldown;
-    [SerializeField] private TextMeshProUGUI freezeCooldown;
+    [Header("Soul counter")]
+    [SerializeField] private Image soulCounter;
+    [SerializeField] private Image soulFull;
+
+    [Header("Decoy ability")]
+    [SerializeField] private Image decoyCooldown;
+    [SerializeField] private Image decoyActive;
+
+    [Header("Freeze ability")]
+    [SerializeField] private Image freezeCooldown;
+    [SerializeField] private Image freezeActive;
+
+    [Header("Flame")]
+    [SerializeField] private Image inactiveFlame;
+    [SerializeField] private Image activeFlame;
+    [SerializeField] private Image flameFog;
+
+    [Header("Player Obj")]
+    public GameObject player;
+
     private GhostEating ghostEating;
     private GhostFreeze ghostFreeze;
-    private ReworkedMovement movementScript;
+    private DecoyAbility decoyScript;
     private EndObjectiveObj endObjectiveObjScript;
-    public GameObject player;
 
     private void Start()
     {
-        movementScript = player.GetComponent<ReworkedMovement>();
+        decoyScript = player.GetComponent<DecoyAbility>();
         ghostEating = player.GetComponent<GhostEating>();
         ghostFreeze = player.GetComponent<GhostFreeze>();
 
         // Gravestone object
         endObjectiveObjScript = GameObject.Find("mainpiece").GetComponent<EndObjectiveObj>();
-
-        sprintCooldown.text = "Sprint Ready";
-        freezeCooldown.text = "Freeze Ready";
     }
 
     void Update()
     {
-        if (ghostEating.ghostsEaten >= 0)
+        AddToSoulsLantern();
+
+        if (ghostFreeze.canFreezeGhost)
         {
-            soulCounter.text = ghostEating.ghostsEaten.ToString() + " / " + endObjectiveObjScript.GetRequiredSoulsValue().ToString();
+            freezeCooldown.gameObject.SetActive(false);
         }
         else
         {
-            soulCounter.text = "0 / " + endObjectiveObjScript.GetRequiredSoulsValue().ToString();
+            freezeCooldown.gameObject.SetActive(true);
+        }
+
+        if (decoyScript.canUseDecoy)
+        {
+            decoyCooldown.gameObject.SetActive(false);
+        }
+        else
+        {
+            decoyCooldown.gameObject.SetActive(true);
+        }
+
+        if (ghostEating.isHunting)
+        {
+            activeFlame.gameObject.SetActive(true);
+            flameFog.gameObject.SetActive(true);
+        }
+        else
+        {
+            activeFlame.gameObject.SetActive(false);
+            flameFog.gameObject.SetActive(false);
         }
     }
 
-    public IEnumerator SprintCountDownCoroutine()
+    public void AddToSoulsLantern()
     {
-        float sprintCooldownTime = movementScript.speedBoostCooldown;
+        soulFull.fillAmount = ghostEating.ghostsEaten * 0.2f;
+    }
 
-        for (float i = sprintCooldownTime; i >= 0; i--)
+    public IEnumerator DecoyCountDown()
+    {
+        float decoyCooldownTime = decoyScript.cooldown;
+
+        float time = 1 / decoyCooldownTime;
+
+        for (float i = decoyCooldownTime; i >= 0; i--)
         {
-            sprintCooldown.text = "Sprint ready in: " + i;
+            decoyCooldown.fillAmount -= time;
             yield return new WaitForSeconds(1);
         }
 
-        sprintCooldown.text = "Sprint Ready";
+        decoyScript.canUseDecoy = true;
+        decoyCooldown.gameObject.SetActive(false);
+        decoyCooldown.fillAmount = 1;
     }
 
     public IEnumerator FreezeCountdownCoroutine()
     {
+        Debug.Log("Freeze cooldown started");
         float freezeCooldownTime = ghostFreeze.freezeCooldown;
+
+        float time = 1 / freezeCooldownTime;
 
         for (float i = freezeCooldownTime; i >= 0; i--)
         {
-            freezeCooldown.text = "Freeze ready in: " + i;
+            freezeCooldown.fillAmount -= time;
             yield return new WaitForSeconds(1);
         }
 
-        freezeCooldown.text = "Freeze Ready";
+        freezeCooldown.gameObject.SetActive(false);
+        freezeCooldown.fillAmount = 1;
     }
 }

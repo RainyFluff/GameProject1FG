@@ -57,11 +57,11 @@ public class StoryBook : MonoBehaviour
     {
         distanceToPlayer = Vector3.Distance(transform.position, _player.transform.position);
 
-        if (distanceToPlayer <= 4f)
+        if (distanceToPlayer <= 2f)
         {
             _interactText.gameObject.SetActive(true);
             _interactText.text = "Q";
-            _interactText.transform.LookAt(_interactText.transform.position - _camera.transform.position);
+            _interactText.transform.rotation = Quaternion.LookRotation((_interactText.transform.position - Camera.main.transform.position).normalized);
             if (Input.GetKeyUp(KeyCode.Q))
             {
                 _bookObj.GetComponent<MeshRenderer>().enabled = false;

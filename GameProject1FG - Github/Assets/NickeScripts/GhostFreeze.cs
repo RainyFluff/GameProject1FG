@@ -29,10 +29,9 @@ public class GhostFreeze : MonoBehaviour
         if (time <= Time.time)
         {
             canFreezeGhost = true;
-            if (Input.GetKeyDown(KeyCode.Space) && ghostEating.ghostsEaten >= 2 && canFreezeGhost)
+            if (Input.GetKeyDown(KeyCode.Space) && canFreezeGhost)
             {
                 StartCoroutine(FreezeCooldown());
-                ghostEating.ghostsEaten -= freezeCost;
                 time = Time.time + freezeCooldown;
                 freezeRadiusIndication = (GameObject)Instantiate(Resources.Load("FreezeRadius"),transform.position, Quaternion.Euler(0,0,0));
                 freezeRadiusIndication.transform.localScale = new Vector3(freezeRange, 0.2f, freezeRange);
@@ -59,11 +58,11 @@ public class GhostFreeze : MonoBehaviour
 
     IEnumerator GhostFrozen(Collider enemy)
     {
-        enemy.GetComponent<NavMeshAgent>().speed = 0;
+        enemy.GetComponent<NavMeshAgent>().isStopped = true;
         aiScript = enemy.GetComponent<AIPathing>();
         aiScript.isFrozen = true;
         yield return new WaitForSeconds(freezeDuration);
-        enemy.GetComponent<NavMeshAgent>().speed = 3.5f; // Original value
+        enemy.GetComponent<NavMeshAgent>().isStopped = false;
         aiScript.isFrozen = false;
     }
 

@@ -10,15 +10,15 @@ public class FlameProximityLight : MonoBehaviour
     [Header("Light")]
     [Range (0.0f, 20.0f)]
     [SerializeField] private float lightIncreaseRate;
-    [Range(0.0f, 10.0f)]
+    [Range(0.0f, 20.0f)]
     [SerializeField] private float lightDecreaseRate;
     [Range(0.0f, 10.0f)]
     [SerializeField] private float baseIntensity;
     [Range(0.0f, 10.0f)]
     [SerializeField] private float maxIntensity;
-    [Range(0.0f, 10.0f)]
+    [Range(0.0f, 100.0f)]
     [SerializeField] private float minIntensity;
-    [Range(0.0f, 2.0f)]
+    [Range(0.0f, 6.0f)]
     [SerializeField] private float minFlameRange = 2.0f;
     [Range(0.0f, 100.0f)]
     [SerializeField] private float maxFlameRange;

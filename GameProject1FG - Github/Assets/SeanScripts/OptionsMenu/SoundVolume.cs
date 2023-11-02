@@ -10,6 +10,9 @@ public class SoundVolume : MonoBehaviour
     [Header("Audio mixer")]
     [SerializeField] private AudioMixer _mixer;
 
+    [Header("Sound_Volume_Slider")]
+    [SerializeField] private GameObject _volumeSlider;
+
     private Slider volume;
 
     void Start()
@@ -19,14 +22,14 @@ public class SoundVolume : MonoBehaviour
             Debug.LogError("Settings SO is NULL");
         }
 
-        volume = gameObject.GetComponent<Slider>();
+        volume = _volumeSlider.GetComponent<Slider>();
         volume.value = _settings.SoundVolume;
-        _mixer.SetFloat("MasterVolume", Mathf.Log10(volume.value) * 10);
+        _mixer.SetFloat("MasterVolume", Mathf.Log10(volume.value) * 20);
     }
 
-    public void SetVolume(float sliderValue)
+    void Update()
     {
-        _mixer.SetFloat("MasterVolume", Mathf.Log10(sliderValue) * 10);
-        _settings.SoundVolume = sliderValue;
+        _mixer.SetFloat("MasterVolume", Mathf.Log10(volume.value) * 20);
+        _settings.SoundVolume = volume.value;
     }
 }

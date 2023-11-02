@@ -48,7 +48,9 @@ public class MainMenu : MonoBehaviour
 
     IEnumerator DelaySceneCourotine()
     {
-        yield return new WaitForSecondsRealtime(0.2f);
+        ButtonClick click = _play_btn.GetComponent<ButtonClick>();
+        float _sound = click._clickSound.length;
+        yield return new WaitForSecondsRealtime(_sound - 0.1f);
         SceneManager.LoadScene(1); // Load level 1
     }
 
@@ -59,7 +61,9 @@ public class MainMenu : MonoBehaviour
 
     IEnumerator DelayQuitCourotine()
     {
-        yield return new WaitForSecondsRealtime(0.2f);
+        ButtonClick click = _quit_btn.GetComponent<ButtonClick>();
+        float _sound = click._clickSound.length;
+        yield return new WaitForSecondsRealtime(_sound - 0.1f);
         Application.Quit();
     }
 

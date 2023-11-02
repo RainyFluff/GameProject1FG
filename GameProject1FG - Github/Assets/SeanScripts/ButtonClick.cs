@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class ButtonClick : MonoBehaviour
 {
-    [SerializeField] private AudioClip _clickSound;
+    public AudioClip _clickSound;
 
     private AudioSource _audioSource;
 
