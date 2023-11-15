@@ -15,7 +15,7 @@ public class EndObjectiveObj : MonoBehaviour
     [SerializeField] private TextMeshPro _interactText;
 
     [Header("End objective settings")]
-    [SerializeField] private float _requiredSouls;
+    public float _requiredSouls;
 
     [Header("Victory window")]
     [SerializeField] private GameObject _victory;

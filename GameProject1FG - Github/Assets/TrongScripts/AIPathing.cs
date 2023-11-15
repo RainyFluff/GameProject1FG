@@ -29,12 +29,16 @@ public class AIPathing : MonoBehaviour
     [SerializeField ]private float startSpeed = 2.6f;
     private bool canSeePlayer; 
     private bool canSeeDecoy;
+    private RaycastHit hit;
+    private MonsterSpawner _monsterSpawner;
+    private bool deathState;
     
     // Start is called before the first frame update
     void Start()
     {
         animator = GetComponent<Animator>();
         dummyPlayer = GameObject.Find("Player");
+        _monsterSpawner = GameObject.Find("MonsterSpawner").GetComponent<MonsterSpawner>();
         decoyScript = GameObject.Find("Player").GetComponent<DecoyAbility>();
         _ghostEating = GameObject.Find("Player").GetComponent<GhostEating>();
         _agent = GetComponent<NavMeshAgent>();
@@ -49,20 +53,40 @@ public class AIPathing : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (deathState)
+        {
+            _agent.enabled = false;
+        }
+
+        if (isFrozen)
+        {
+            animator.SetBool("IsFrozen", true);
+        }
+        else
+        {
+            animator.SetBool("IsFrozen", false);
+        }
+        deathState = animator.GetBool("HasDied");
         float distanceBetweenTargets = Vector3.Distance(_agent.transform.position, dummyPlayer.transform.position);
 
-        if (distanceBetweenTargets < (viewRadius * 1.80f) && _ghostEating.isHunting)
+        if (distanceBetweenTargets < (viewRadius + 0.8f) && _ghostEating.isHunting)
         {
             //_agent.speed++;
             Vector3 directToPlayer = _agent.transform.position - dummyPlayer.transform.position ;
             Vector3 newPos = _agent.transform.position + directToPlayer;
             _agent.SetDestination(newPos);
+            _agent.speed = startSpeed / speedMultiplier;
         }
         else
         {
-            
-        SeeingPlayer();
-        SeeingDecoy();
+            _agent.speed = startSpeed;
+            SeeingPlayer();
+            SeeingDecoy();
+        }
+
+        if (isFrozen)
+        {
+            GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
         }
     }
 
@@ -72,12 +96,14 @@ public class AIPathing : MonoBehaviour
 
         float distanceBetweenTargets = Vector3.Distance(_agent.transform.position, dummyPlayer.transform.position);
         //Debug.Log(distanceBetweenTargets);
-        if (distanceBetweenTargets < viewRadius)
+        if (distanceBetweenTargets < viewRadius && !isFrozen)
         {
+            Debug.DrawLine(transform.position, dummyPlayer.transform.position, Color.red);
             _agent.transform.rotation = Quaternion.Lerp(_agent.transform.rotation, Quaternion.LookRotation(dummyPlayer.transform.position - _agent.transform.position), _agent.angularSpeed * Time.deltaTime);
             canSeePlayer = true;
             animator.SetInteger("HuntingState", 1);
             FollowPlayer();
+            
         }
         else
         {
@@ -119,14 +145,13 @@ public class AIPathing : MonoBehaviour
     {
         viewRadius = startRadius;
         _agent.speed = startSpeed;
-        animator.SetBool("Hunting", false);
-
         float distanceBetween = Vector3.Distance(_agent.transform.position, points[nextPoint].transform.position);
         if (distanceBetween < 1.5f)
         {
             nextPoint = nextPoint != 2 ? nextPoint + 1 : 0;
         }
         _agent.destination = points[nextPoint].position;
+        
     }
 
     private void FollowPlayer()
@@ -152,6 +177,13 @@ public class AIPathing : MonoBehaviour
             Pathing();
             
         }
+    }
+
+    public void DestroySelf()
+    {
+        Destroy(gameObject);
+        _monsterSpawner.spawnedMonsters--;
+        _ghostEating.ghostsEaten++;
     }
     
 }

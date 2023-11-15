@@ -65,7 +65,6 @@ public class StoryBook : MonoBehaviour
             if (Input.GetKeyUp(KeyCode.Q))
             {
                 _bookObj.GetComponent<MeshRenderer>().enabled = false;
-                _interactText.GetComponent<MeshRenderer>().enabled = false;
                 _bookUI.SetActive(true);
             }
         }
@@ -82,7 +81,9 @@ public class StoryBook : MonoBehaviour
 
     IEnumerator CloseDelay()
     {
-        yield return new WaitForSecondsRealtime(0.2f);
+        ButtonClick close = _closeBtn.GetComponent<ButtonClick>();
+        float _sound = close._clickSound.length;
+        yield return new WaitForSecondsRealtime(_sound - 0.1f);
         _bookUI.SetActive(false);
     }
 }

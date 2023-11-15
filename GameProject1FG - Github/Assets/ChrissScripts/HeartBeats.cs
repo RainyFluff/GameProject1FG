@@ -7,6 +7,11 @@ public class HeartBeats : MonoBehaviour
     [Header("Audio Clips")]
     [SerializeField] private AudioClip slowHeartBeat;
     [SerializeField] private AudioClip fastHeartBeat;
+    [SerializeField] private GameSettings settings;
+
+    [SerializeField] public float fadeOutTime = 0.5f;
+    [Range(0.01f, 2.0f)]
+
 
     public AudioSource _audio;
 
@@ -24,6 +29,7 @@ public class HeartBeats : MonoBehaviour
     {
         if (isFar && !isClose)
         {
+            _audio.volume = settings.SoundVolume;
             _audio.clip = slowHeartBeat;
             if (!_audio.isPlaying)
             {
@@ -36,6 +42,7 @@ public class HeartBeats : MonoBehaviour
 
         else if (isClose && !isFar)
         {
+            _audio.volume = settings.SoundVolume;
             _audio.clip = fastHeartBeat;
             if (!_audio.isPlaying)
             {
@@ -47,6 +54,7 @@ public class HeartBeats : MonoBehaviour
 
         else if (!isClose && !isFar && _audio.isPlaying)
         {
+            StartCoroutine(FadeOut(0, fadeOutTime));
             _enemyProximityLight.StopHeartBeatSound();
         }
     }
@@ -69,4 +77,18 @@ public class HeartBeats : MonoBehaviour
     {
         isClose = false;
     }
+
+    IEnumerator FadeOut(float endValue, float duration)
+    {
+        float time = 0;
+        float startValue = _audio.volume;
+        while (time < duration)
+        {
+            _audio.volume = Mathf.Lerp(startValue, endValue, time / duration);
+            time += Time.deltaTime;
+            yield return null;
+        }
+        _audio.volume = endValue;
+    }
+
 }
