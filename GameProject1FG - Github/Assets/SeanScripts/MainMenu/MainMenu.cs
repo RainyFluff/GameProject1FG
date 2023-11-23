@@ -1,0 +1,79 @@
+using System.Collections;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
+public class MainMenu : MonoBehaviour
+{
+    [Header("Menu buttons")]
+    [SerializeField] private Button _play_btn;
+    [SerializeField] private Button _options_btn;
+    [SerializeField] private Button _credits_btn;
+    [SerializeField] private Button _quit_btn;
+
+    [Header("Menus")]
+    [SerializeField] private GameObject _optionsMenu;
+    [SerializeField] private GameObject _creditsMenu;
+
+    void Start()
+    {
+        Button play = _play_btn.GetComponent<Button>();
+        Button quit = _quit_btn.GetComponent<Button>();
+        Button options = _options_btn.GetComponent<Button>();
+        Button credits = _credits_btn.GetComponent<Button>();
+        
+        if (play == null ) 
+        {
+            Debug.LogError("Play button is NULL");
+        }
+        if ( quit == null )
+        {
+            Debug.LogError("Quit button is NULL");
+        }
+        if (options == null )
+        {
+            Debug.LogError("Controls button is NULL");
+        }
+
+        play.onClick.AddListener(PlayGame);
+        quit.onClick.AddListener(QuitGame);
+        options.onClick.AddListener(Options);
+        credits.onClick.AddListener(Credits);
+    }
+
+    void PlayGame()
+    {
+        StartCoroutine(DelaySceneCourotine());
+    }
+
+    IEnumerator DelaySceneCourotine()
+    {
+        ButtonClick click = _play_btn.GetComponent<ButtonClick>();
+        float _sound = click._clickSound.length;
+        yield return new WaitForSecondsRealtime(_sound - 0.1f);
+        SceneManager.LoadScene(1); // Load level 1
+    }
+
+    void QuitGame()
+    {
+        StartCoroutine(DelayQuitCourotine());
+    }
+
+    IEnumerator DelayQuitCourotine()
+    {
+        ButtonClick click = _quit_btn.GetComponent<ButtonClick>();
+        float _sound = click._clickSound.length;
+        yield return new WaitForSecondsRealtime(_sound - 0.1f);
+        Application.Quit();
+    }
+
+    void Options()
+    {
+        _optionsMenu.SetActive(true);
+    }
+
+    void Credits()
+    {
+        _creditsMenu.SetActive(true);
+    }
+}
